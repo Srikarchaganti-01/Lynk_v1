@@ -1,29 +1,27 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 
-function MessageBox() {
+function MessageBox({ onSend }) {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
     if (!message.trim()) return;
 
-    console.log("Sending:", message);
+    onSend(message);
 
     setMessage("");
-    console.log("Sent ");
   };
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-xl shadow-gray-400 ">
-      {/* Header */}
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-xl shadow-gray-400">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-black">Message Box</h2>
+
         <p className="text-sm text-gray-500">
           Enter text to transmit through Morse
         </p>
       </div>
 
-      {/* Input */}
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
@@ -32,7 +30,6 @@ function MessageBox() {
         className="w-full resize-none rounded-lg border border-gray-300 p-3 text-sm text-black outline-none transition focus:shadow-gray-200 focus:shadow-xl"
       />
 
-      {/* Footer */}
       <div className="mt-4 flex items-center justify-between">
         <span className="text-sm text-gray-500">
           {message.length} characters

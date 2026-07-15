@@ -1,22 +1,23 @@
 import { Wifi, WifiOff, Radio } from "lucide-react";
 
-function StatusBox({ status = "Transmitting" }) {
+function StatusBox({ connectionStatus, transmissionStatus }) {
   const getStatus = () => {
-    switch (status) {
-      case "Connected":
-        return {
-          icon: <Wifi size={50} />,
-          text: "ESP Connected",
-          color: "text-green-600 bg-green-50",
-          strength: "Excellent",
-        };
+    if (connectionStatus === "Disconnected") {
+      return {
+        icon: <WifiOff size={50} />,
+        text: "ESP Disconnected",
+        color: "text-red-600 bg-red-50",
+        strength: "N/C",
+      };
+    }
 
+    switch (transmissionStatus) {
       case "Transmitting":
         return {
           icon: <Radio size={50} />,
           text: "Transmitting",
           color: "text-blue-600 bg-blue-50",
-          strength: "Good",
+          strength: "Excellent",
         };
 
       case "Receiving":
@@ -24,15 +25,15 @@ function StatusBox({ status = "Transmitting" }) {
           icon: <Radio size={50} />,
           text: "Receiving",
           color: "text-purple-600 bg-purple-50",
-          strength: "Good",
+          strength: "Excellent",
         };
 
       default:
         return {
-          icon: <WifiOff size={50} />,
-          text: "Disconnected",
-          color: "text-red-600 bg-red-50",
-          strength: "N/C",
+          icon: <Wifi size={50} />,
+          text: "ESP Connected",
+          color: "text-green-600 bg-green-50",
+          strength: "Excellent",
         };
     }
   };
@@ -44,7 +45,7 @@ function StatusBox({ status = "Transmitting" }) {
       <h2 className="mb-4 text-lg font-semibold text-black">Device Status</h2>
 
       <div
-        className={`flex items-center gap-3 rounded-lg px-4 py-3  ${current.color}`}
+        className={`flex items-center gap-3 rounded-lg px-4 py-3 ${current.color}`}
       >
         {current.icon}
 
@@ -52,6 +53,7 @@ function StatusBox({ status = "Transmitting" }) {
           <p className="font-medium">{current.text}</p>
 
           <p className="text-sm opacity-70">Lynk ESP32 Module</p>
+
           <p className="text-sm opacity-70">
             Wifi Strength : {current.strength}
           </p>
