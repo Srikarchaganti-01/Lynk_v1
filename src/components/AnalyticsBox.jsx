@@ -4,7 +4,7 @@ function AnalyticsBox({ analytics }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <h2 className="mb-4 text-lg font-semibold text-black">
-        Life-Time Analytics
+        All-Time Analytics
       </h2>
 
       <div className="space-y-4">
