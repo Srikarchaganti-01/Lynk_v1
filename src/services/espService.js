@@ -1,5 +1,5 @@
-const ESP_IP = "10.22.228.241";
-
+const ESP_IP = import.meta.env.VITE_ESP_IP;
+console.log(ESP_IP);
 export async function checkESPConnection() {
   try {
     const response = await fetch(`http://${ESP_IP}/`);
