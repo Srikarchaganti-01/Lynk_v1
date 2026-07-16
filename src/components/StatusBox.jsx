@@ -1,6 +1,6 @@
 import { Wifi, WifiOff, Radio } from "lucide-react";
 
-function StatusBox({ connectionStatus, transmissionStatus }) {
+function StatusBox({ connectionStatus, transmissionStatus, receivingStatus }) {
   const getStatus = () => {
     if (connectionStatus === "Disconnected") {
       return {
@@ -11,21 +11,22 @@ function StatusBox({ connectionStatus, transmissionStatus }) {
       };
     }
 
+    if (receivingStatus === "Receiving") {
+      return {
+        icon: <Radio size={50} />,
+        text: "Receiving",
+        color: "text-purple-600 bg-purple-50",
+        strength: "Good",
+      };
+    }
+
     switch (transmissionStatus) {
       case "Transmitting":
         return {
           icon: <Radio size={50} />,
           text: "Transmitting",
           color: "text-blue-600 bg-blue-50",
-          strength: "Excellent",
-        };
-
-      case "Receiving":
-        return {
-          icon: <Radio size={50} />,
-          text: "Receiving",
-          color: "text-purple-600 bg-purple-50",
-          strength: "Excellent",
+          strength: "Good",
         };
 
       default:
@@ -51,9 +52,7 @@ function StatusBox({ connectionStatus, transmissionStatus }) {
 
         <div>
           <p className="font-medium">{current.text}</p>
-
           <p className="text-sm opacity-70">Lynk ESP32 Module</p>
-
           <p className="text-sm opacity-70">
             Wifi Strength : {current.strength}
           </p>

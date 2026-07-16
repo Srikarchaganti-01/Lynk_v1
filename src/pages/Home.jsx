@@ -10,49 +10,63 @@ import {
   HistoryBox,
   Footer,
 } from "../components";
-
+import { sendMessage } from "../services/espService";
 import { quickMessages } from "../data/quickMsgs";
 import useESPConnection from "../hooks/useESPConnection";
 import useTransmission from "../hooks/useTransmission";
-
+import useReceiver from "../hooks/useReceiver";
 import { saveHistory, getHistory } from "../services/storageService";
 
 import { mockAnalytics } from "../data/mockData";
 
 function Home() {
-  const { status } = useESPConnection();
-
-  const {
-    transmission,
-    startTransmission,
-    updateTransmission,
-    stopTransmission,
-  } = useTransmission();
+  const { status, setReceiving } = useESPConnection();
+  const { transmission } = useTransmission({
+    onComplete: () => {
+      setHistory(getHistory());
+    },
+  });
 
   const [history, setHistory] = useState(getHistory());
-
-  // Common function for MessageBox + QuickMsgBox
-  const handleSend = (message) => {
-    if (!message.trim()) return;
-
-    startTransmission(message, "Transmitting");
-
-    // Fake transmission for now
-    setTimeout(() => {
-      stopTransmission();
-
-      saveHistory(message);
-
+  useReceiver({
+    onReceive: () => {
       setHistory(getHistory());
-    }, 3000);
+    },
+
+    setReceiving,
+  });
+  // Common function for MessageBox + QuickMsgBox
+  // const handleSend = (message) => {
+  //   if (!message.trim()) return;
+
+  //   startTransmission(message, "Transmitting");
+
+  //   // Fake transmission for now
+  //   setTimeout(() => {
+  //     stopTransmission();
+
+  //     saveHistory(message);
+
+  //     setHistory(getHistory());
+  //   }, 3000);
+  // };
+
+  // const handleSend = (message) => {
+  //   startTransmission(message, "Transmitting");
+
+  //   sendMessage(message);
+  // };
+  const handleSend = async (message) => {
+    await sendMessage(message);
   };
+
   const analytics = {
     sentMessages: history.filter((item) => item.type === "Transmitted").length,
 
     receivedMessages: history.filter((item) => item.type === "Received").length,
 
     totalCharacters: history.reduce(
-      (total, item) => total + item.message.length,
+      (total, item) => total + (item.message?.length || 0),
       0,
     ),
   };
@@ -72,6 +86,7 @@ function Home() {
             <StatusBox
               connectionStatus={status}
               transmissionStatus={transmission.status}
+              receivingStatus={status}
             />
           </div>
         </div>

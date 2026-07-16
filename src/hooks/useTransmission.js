@@ -1,46 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getTransmission } from "../services/espService";
+import { saveHistory } from "../services/storageService";
 
-function useTransmission() {
+function useTransmission({ onComplete }) {
   const [transmission, setTransmission] = useState({
     status: "Connected",
     message: "",
-    currentChar: "",
+    currentChar: "-",
     currentMorse: "",
     progress: 0,
   });
 
-  const startTransmission = (message, mode = "Transmitting") => {
-    setTransmission({
-      status: mode,
-      message: message,
-      currentChar: "",
-      currentMorse: "",
-      progress: 0,
-    });
-  };
+  useEffect(() => {
+    let previousStatus = "Connected";
 
-  const updateTransmission = (data) => {
-    setTransmission((prev) => ({
-      ...prev,
-      ...data,
-    }));
-  };
+    const fetchData = async () => {
+      const data = await getTransmission();
 
-  const stopTransmission = () => {
-    setTransmission({
-      status: "Connected",
-      message: "",
-      currentChar: "",
-      currentMorse: "",
-      progress: 0,
-    });
-  };
+      if (data) {
+        setTransmission(data);
+
+        if (previousStatus === "Transmitting" && data.status === "Connected") {
+          saveHistory(data.message);
+
+          onComplete();
+        }
+
+        previousStatus = data.status;
+      }
+    };
+
+    const interval = setInterval(fetchData, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return {
     transmission,
-    startTransmission,
-    updateTransmission,
-    stopTransmission,
   };
 }
 
